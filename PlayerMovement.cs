@@ -11,7 +11,7 @@ public class PlayerMovement : MonoBehaviour
 {
     private CharacterInput controls;
     private Vector3 velocity;
-    private Vector2 move;
+    private Vector3 move;
     public Vector3 mousePosition;
     public float aimAngle;
 
@@ -47,8 +47,6 @@ public class PlayerMovement : MonoBehaviour
     void Update()
     {
 
-        //Debug.Log(velocity.y);
-
 
         
 
@@ -66,22 +64,33 @@ public class PlayerMovement : MonoBehaviour
 
         if (controls.Player.Fire.ReadValue<float>() > 0)
         {
+
+/*            canMoveInAir = false;
             //Debug.Log("fewf");
-            if (isGrounded() & gun.FireGun()) // triggers the FireGun function and checks if the player is grounded
+            if (isGrounded() && gun.FireGun()) // triggers the FireGun function and checks if the player is grounded
             {
                 // create an object or activate an object or something
                 Debug.Log("fired and is grounded");
-            } else if (gun.FireGun() & isGrounded() == false)
+            } else if (gun.FireGun() && isGrounded() == false)
             {
                 // create an object or activate an object or something
                 Debug.Log("fired and isn't grounded");
-                canMoveInAir = false;
-                velocity.x += Mathf.Cos(aimAngle * Mathf.Deg2Rad) * gunRecoilForce;
                 
-                velocity.y += Mathf.Sin(aimAngle * Mathf.Deg2Rad) * gunRecoilForce;
+                velocity.x = Mathf.Cos(aimAngle * Mathf.Deg2Rad) * gunRecoilForce;
+                
+                velocity.y = Mathf.Sin(aimAngle * Mathf.Deg2Rad) * gunRecoilForce;
 
 
                
+            }*/
+
+            if (gun.FireGun())
+            {
+                canMoveInAir = false;
+
+                velocity.x = Mathf.Cos(aimAngle * Mathf.Deg2Rad) * gunRecoilForce;
+
+                velocity.y = Mathf.Sin(aimAngle * Mathf.Deg2Rad) * gunRecoilForce;
             }
         }
         Debug.Log(Mathf.Sin(aimAngle * Mathf.Deg2Rad)); 
@@ -114,34 +123,66 @@ public class PlayerMovement : MonoBehaviour
     
     private void PlayerMove()
     {
-        if (canMoveInAir == false)
-        {
-            //controls.Player.Movement.Disable();
-        } else if (canMoveInAir)
-        {
-            //controls.Player.Movement.Enable();
-        }
+        /*       if (canMoveInAir == false)
+               {
+                   //controls.Player.Movement.Disable();
+               } else if (canMoveInAir)
+               {
+                   //controls.Player.Movement.Enable();
+               }
 
-        
+
+
+               if (canMoveInAir)
+               {
+                   velocity = controls.Player.Movement.ReadValue<Vector2>();
+
+               }
+               else
+               {
+                   move = velocity;
+               }
+
+               //Debug.Log(move);
+
+               //move.x += velocity.x;
+               //move.y += velocity.y;
+
+
+
+
+               //Vector3 movement = (move.y * transform.forward) + (move.x * transform.right);
+               //controller.Move(movement * moveSpeed * Time.deltaTime);
+
+
+
+
+               controller.Move(velocity * moveSpeed * Time.deltaTime);
+
+               //controller.SimpleMove(velocity * moveSpeed * Time.deltaTime);*/
+
+
+
+        Vector2 input = controls.Player.Movement.ReadValue<Vector2>();
+        move = new Vector3(input.x, 0, input.y);
+        move = Vector3.ClampMagnitude(move, 1f);
+
+
+
 
         if (canMoveInAir)
         {
-            move = controls.Player.Movement.ReadValue<Vector2>();
-            velocity.x = move.x;
+            Vector3 finalMove = (move * moveSpeed) + (velocity.y * Vector3.up);
+            controller.Move(finalMove * Time.deltaTime);
+            
+        } else
+        {
+            move.x = velocity.x;
+            move.y = velocity.y;
+            Vector3 finalMove = (move * moveSpeed) + (velocity.y * Vector3.up);
         }
 
-
-        
-
-
-        //Vector3 movement = (move.y * transform.forward) + (move.x * transform.right);
-        //controller.Move(movement * moveSpeed * Time.deltaTime);
-
-
-
-
-        controller.Move(velocity * moveSpeed * Time.deltaTime);
-        
+        Debug.Log(canMoveInAir);
     }
 
     /*public void recieveGunVelocity(Vector3 gunVelocity)
@@ -155,13 +196,17 @@ public class PlayerMovement : MonoBehaviour
 
     private bool isGrounded()
     {
-            //return Physics.CheckSphere(ground.position, distanceToground, groundMask);
+        //return Physics.CheckSphere(ground.position, distanceToground, groundMask);
+
+        
 
         if (canInteract)
         {
+            Debug.Log("can interact");
             return true;
         } else
         {
+            Debug.Log("can't interact");
             return false;
 
         }
@@ -179,7 +224,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void Grav()
     {
-        if (isGrounded() & velocity.y < 0)
+        if (isGrounded() && velocity.y < 0)
         {
             velocity.y = -2f;
             canMoveInAir = true;
