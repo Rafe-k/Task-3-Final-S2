@@ -163,24 +163,37 @@ public class PlayerMovement : MonoBehaviour
 
 
 
+        // Vector2 input = controls.Player.Movement.ReadValue<Vector2>(); // old code
+        // move = new Vector3(input.x, 0, input.y);
+        // move = Vector3.ClampMagnitude(move, 1f);
+
+
         Vector2 input = controls.Player.Movement.ReadValue<Vector2>();
-        move = new Vector3(input.x, 0, input.y);
-        move = Vector3.ClampMagnitude(move, 1f);
-
-
-
-
-        if (canMoveInAir)
+        if (canMoveInAir) // new code
         {
-            Vector3 finalMove = (move * moveSpeed) + (velocity.y * Vector3.up);
-            controller.Move(finalMove * Time.deltaTime);
-            
+            move = new Vector3(input.x, 0, input.y);
+            move = Vector3.ClampMagnitude(move, 1f);
         } else
         {
-            move.x = velocity.x;
-            move.y = velocity.y;
-            Vector3 finalMove = (move * moveSpeed) + (velocity.y * Vector3.up);
+            move = new Vector3(velocity.x, 0, velocity.y);
+            move = Vector3.ClampMagnitude(move, maxLength);
         }
+        
+
+
+        // if (canMoveInAir)
+        // {
+        //     Vector3 finalMove = (move * moveSpeed) + (velocity.y * Vector3.up);
+        //     controller.Move(finalMove * Time.deltaTime);
+        // } else
+        // {
+        //     move.x = velocity.x;
+        //     move.y = velocity.y;
+        //     Vector3 finalMove = (move * moveSpeed) + (velocity.y * Vector3.up);
+        // }
+
+        Vector3 finalMove = (move * moveSpeed) + (velocity.y * Vector3.up);
+        controller.Move(finalMove * Time.deltaTime);
 
         Debug.Log(canMoveInAir);
     }
