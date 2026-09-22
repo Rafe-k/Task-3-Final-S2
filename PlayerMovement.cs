@@ -26,7 +26,7 @@ public class PlayerMovement : MonoBehaviour
     public LayerMask groundMask;
     public bool canMoveInAir = true;
     private PlayerFire gun;
-    public float gunRecoilForce = 10f;
+    public float gunRecoilForce = 5f;
 
     bool canInteract;
 
@@ -54,7 +54,7 @@ public class PlayerMovement : MonoBehaviour
         mousePosition = Camera.main.ScreenToWorldPoint(mousePosition);
         mousePosition.z = 0;
 
-        aimAngle = Mathf.Atan2(move.y - mousePosition.y, move.x - mousePosition.x) * 180 / Mathf.PI;
+        aimAngle = Mathf.Atan2(move.y - mousePosition.y, move.x - mousePosition.x) * 180 / Mathf.PI; // might need to change
         
         
 
@@ -86,7 +86,7 @@ public class PlayerMovement : MonoBehaviour
 
             if (gun.FireGun())
             {
-                canMoveInAir = false;
+                canMoveInAir = false; // this should just become immediatly become true again if the player is grounded, hence why this statement has been simplified
 
                 velocity.x = Mathf.Cos(aimAngle * Mathf.Deg2Rad) * gunRecoilForce;
 
@@ -105,18 +105,18 @@ public class PlayerMovement : MonoBehaviour
 
     }
 
-    public float sendAngle()
+    public float sendAngle() // sends aimAngle to a function in the PlayerFire file
     {
         return aimAngle;
     }
 
-    public Vector3 sendPosition()
+    public Vector3 sendPosition() // sends the position of the player to a function in the PlayerFire file
     {
         return move;
     }
 
 
-    public float sendFireControl()
+    public float sendFireControl() // sends a float (a bool doesn't work for some reason) that's a one the the player is pressing the fire key
     {
         return (controls.Player.Fire.ReadValue<float>());
     }
@@ -176,7 +176,7 @@ public class PlayerMovement : MonoBehaviour
         } else
         {
             move = new Vector3(velocity.x, 0, velocity.y);
-            move = Vector3.ClampMagnitude(move, maxLength);
+            move = Vector3.ClampMagnitude(move, maxLength); // maybe maxLength could be gunRecoilForce
         }
         
 
@@ -207,7 +207,7 @@ public class PlayerMovement : MonoBehaviour
         Debug.Log("triggered");
     }*/
 
-    private bool isGrounded()
+    private bool isGrounded() // This function is being annoying (or is it the Grav function?)
     {
         //return Physics.CheckSphere(ground.position, distanceToground, groundMask);
 
@@ -240,7 +240,7 @@ public class PlayerMovement : MonoBehaviour
         if (isGrounded() && velocity.y < 0)
         {
             velocity.y = -2f;
-            canMoveInAir = true;
+            canMoveInAir = true; // I should just put this in the grounded function
             if (Mathf.Abs(velocity.x) > moveSpeed)
             {
                 //velocity.x -= Mathf.Sign(velocity.x) * 0.2f;
