@@ -18,7 +18,7 @@ public class MouseMovement : PlayerInput
     private void Awake()
     {
         controls = new CharacterInput();
-        controller = new CharacterController();
+        controller = new CharacterController(); // both of these may not be necessary
     }
     void Start()
     {
@@ -35,28 +35,9 @@ public class MouseMovement : PlayerInput
     {
 
 
-        //move = controls.Player.Mouse.ReadValue<Vector2>();
-        //move = Input.mousePosition;
-
-
-
-        //float mouseX = Input.mousePosition.x; 
-        //float mouseY = Input.mousePosition.y;
-
-        //Vector2 movement = (move.x * transform.right) + (move.y * transform.up);
-
-        //controller.Equals(movement);
-        //controller.Move(movement);
-        //controller.Equals(movement);
-
-
         mousePosition = Input.mousePosition;
         mousePosition = Camera.main.ScreenToWorldPoint(mousePosition);
         transform.position = Vector2.Lerp(transform.position, mousePosition, moveSpeed);
-        //Debug.Log();
-
-        //Debug.Log(mousePosition);
-        //PlayerInput.FindObjectOfType<Sp>
         
     }
 
